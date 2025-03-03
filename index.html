@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Real Time Face Recognition</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f8f9fa;
+    }
+    .video-container {
+      width: 640px;
+      margin: 20px auto;
+      position: relative;
+      border: 2px solid #343a40; /* Optional outer border */
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .video-stream {
+      width: 100%;
+      display: block;
+    }
+    /* Overlay element to display the face boundary */
+    .face-label {
+      position: absolute;
+      border: 3px solid black;  /* Thick black border */
+      pointer-events: none;
+      display: none; /* Initially hidden; show when a face is detected */
+    }
+    .log-container {
+      width: 640px;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center my-4">Real Time Face Recognition</h1>
+    
+    <!-- Video Stream Container -->
+    <div class="video-container">
+      <img src="{{ url_for('video_feed') }}" class="video-stream" alt="Video Stream">
+      <!-- Dynamic overlay to outline detected faces -->
+      <div class="face-label" id="face-label"></div>
+    </div>
+    
+    <!-- Recognition Logs -->
+    <div class="log-container">
+      <h2>Recognition Logs</h2>
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th>User</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody id="log-table-body">
+          <!-- Log rows will be appended here dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    function updateLogs() {
+      $.getJSON('/logs', function(data) {
+        const logTableBody = $('#log-table-body');
+        logTableBody.empty(); // Clear current log entries
+        $.each(data, function(index, log) {
+          const row = $('<tr></tr>');
+          row.append('<td>' + log.user + '</td>');
+          row.append('<td>' + log.timestamp + '</td>');
+          logTableBody.append(row);
+        });
+      });
+    }
+    
+    $(document).ready(function(){
+      updateLogs(); // Initial load of logs
+      setInterval(updateLogs, 2000); // Refresh logs every 2 seconds
+      
+      // Example: Dynamically display/update the face label overlay.
+      // When a face is detected, set the overlay's position and dimensions.
+      // Example (this should be replaced with your actual face detection logic):
+      // $("#face-label").css({ top: '50px', left: '100px', width: '150px', height: '150px' }).show();
+    });
+  </script>
+</body>
+</html>
